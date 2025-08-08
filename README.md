@@ -22,7 +22,11 @@ This code uses [ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/stable/e
 
 This software uses ESP32-S3's built-in UART (UART0)  to send/recieve MIDI message. UART0 uses D6/GPIO43 port as TX (MIDI output) and D7/GPIO44 port as RX (MIDI input). Therefore, you need to connect MIDI interface circuit to these port. For more information about this circuit, please check specification document: [https://midi.org/5-pin-din-electrical-specs](https://midi.org/5-pin-din-electrical-specs).
 
-To build this MIDI interface circuit on breadboard, please check the schematic image and layout image in `schematic` directory.
+To build this MIDI interface circuit on breadboard, please check the schematic image and layout image in [schematic](./schematic/) directory.
+
+### Example of a circuit using breadboard
+
+<img alt="MIDI interface circuit using breadboard" src="./schematic/midi_if_breadboard.png" width=400>
 
 ## License
 
