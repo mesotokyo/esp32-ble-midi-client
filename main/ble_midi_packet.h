@@ -36,5 +36,7 @@ protected:
   size_t packetSize;
   size_t currentIndex;
   uint8_t timestampHigh;
+  uint16_t prevTimestampLow;
+  bool timestampOverflowed;
   bool valid;
 };

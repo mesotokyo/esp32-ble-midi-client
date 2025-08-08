@@ -91,17 +91,6 @@ class ScanCallbacks: public NimBLEScanCallbacks {
 
 void notifyCB(NimBLERemoteCharacteristic* pRemoteCharacteristic,
               uint8_t* pData, size_t length, bool isNotify) {
-
-  /*
-  std::stringstream ss;
-  ss << " from " << pRemoteCharacteristic->getClient()->getPeerAddress().toString()
-     << ": Service = " << pRemoteCharacteristic->getRemoteService()->getUUID().toString()
-     <<  ", Characteristic = " << pRemoteCharacteristic->getUUID().toString()
-     << ", Value = " << std::string((char*)pData, length);
-
-  ESP_LOGI(TAG, "[%s] %s", ((isNotify == true) ? "Notification" : "Indication"),
-           ss.str().c_str());
-  */
   BLEMidiPacket packet = BLEMidiPacket(pData, length);
   ESP_LOGD(TAG, "<<<< NOTIFY (%d byte(s)) >>>>", packet.getSize());
   while (packet.hasNextMessage()) {
@@ -171,7 +160,8 @@ NimBLEClient* prepareClient() {
   ESP_LOGD(TAG, "set connection params");
   pClient->setConnectionParams(12, 12, 0, 150);
 
-  /** Set how long we are willing to wait for the connection to complete (milliseconds), default is 30000. */
+  /* Set how long we are willing to wait for the connection
+      to complete (milliseconds), default is 30000. */
   pClient->setConnectTimeout(5 * 1000);
 
   if (pClient->connect(advDevice)) {

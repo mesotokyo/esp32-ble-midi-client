@@ -3,6 +3,14 @@
 #define TIMESTAMP_LOW_MASK 0b01111111
 #define TIMESTAMP_HIGH_MASK 0b00111111
 
+inline uint8_t calcTimestampLow(uint8_t value) {
+  return value & TIMESTAMP_HIGH_MASK;
+}
+
+inline uint8_t calcTimestamp(uint8_t timestampHigh, uint8_t timestampLow) {
+  return (timestampHigh << 7) + calcTimestampLow(timestampLow);
+}
+
 BLEMidiMessage::BLEMidiMessage(const uint8_t* pAttrValue, uint8_t timestampHigh, size_t size) {
   timestamp = 0;
   bodySize = 0;
@@ -13,7 +21,7 @@ BLEMidiMessage::BLEMidiMessage(const uint8_t* pAttrValue, uint8_t timestampHigh,
     return;
   }
 
-  timestamp = (timestampHigh << 7) + (TIMESTAMP_LOW_MASK & pValue[0]);
+  timestamp = calcTimestamp(timestampHigh, pValue[0]);
   bodySize = size - 1;
   valid = true;
 }
@@ -39,6 +47,8 @@ BLEMidiPacket::BLEMidiPacket(const uint8_t* pAttrValue, size_t size) {
   packetSize = size;
   currentIndex = 1;
   timestampHigh = 0;
+  prevTimestampLow = 0;
+  timestampOverflowed = false;
   valid = false;
 
   // check pointer and size is valid
@@ -60,6 +70,8 @@ BLEMidiPacket::BLEMidiPacket(const uint8_t* pAttrValue, size_t size) {
 
 BLEMidiMessage BLEMidiPacket::firstMessage() {
   currentIndex = 1;
+  prevTimestampLow = 0;
+  timestampOverflowed = false;
   return nextMessage();
 }
 
@@ -84,6 +96,16 @@ BLEMidiMessage BLEMidiPacket::nextMessage() {
 
   while((currentIndex < packetSize) && isDataByte(pValue[currentIndex])) {
     currentIndex++;
+  }
+
+  // calculate timestamp
+  // note: timestampLow can be overflowed at mose once,
+  // so we don't need to consider that situation. (see BLE MIDI specification)
+  if (calcTimestampLow(pValue[start]) < calcTimestampLow(prevTimestampLow)) {
+    timestampOverflowed = true;
+  }
+  if (timestampOverflowed) {
+    return BLEMidiMessage(pValue + start, timestampHigh + 1, currentIndex - start);
   }
   return BLEMidiMessage(pValue + start, timestampHigh, currentIndex - start);
 }
