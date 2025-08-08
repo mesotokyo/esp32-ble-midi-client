@@ -1,4 +1,4 @@
-#include "uart-midi.h"
+#include "uart_midi.h"
 
 UartSerial::UartSerial() {
   // Setup UART buffered IO with event queue

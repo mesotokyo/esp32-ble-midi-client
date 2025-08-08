@@ -4,7 +4,7 @@
 #include <string>
 
 #include "ble_midi_packet.h"
-#include "uart-midi.h"
+#include "uart_midi.h"
 
 #define LOG_LOCAL_LEVEL ESP_LOG_VERBOSE
 #include "esp_log.h"
